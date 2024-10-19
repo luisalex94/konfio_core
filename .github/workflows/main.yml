@@ -38,6 +38,11 @@ jobs:
         cd lambdas_functions/bank_core/BankCoreDepositMovement
         zip -r ../BankCoreDepositMovement.zip .
 
+    - name: Packge BankCoreChargeMovement
+      run: |
+        cd lambdas_functions/bank_core/BankCoreChargeMovement
+        zip -r ../BankCoreChargeMovement.zip .
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -60,3 +65,7 @@ jobs:
     - name: Deploy Lambda BankCoreDepositMovement
       run: |
         aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_004 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreDepositMovement.zip
+
+    - name: Deploy Lambda BankCoreChargeMovement
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_005 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreChargeMovement.zip
