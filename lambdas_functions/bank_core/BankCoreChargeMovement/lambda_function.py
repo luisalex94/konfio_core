@@ -37,7 +37,7 @@ def lambda_handler(event, context):
         id = random.randint(0000000000, 9999999999)
 
         # type of movement: deposit
-        movement_type = 'deposit'
+        movement_type = 'charge'
     
         try:
             response = table.query(
