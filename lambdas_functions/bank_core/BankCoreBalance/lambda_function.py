@@ -40,21 +40,14 @@ def lambda_handler(event, context):
                 'statusCode': 404,
                 'body': json.dumps('Account not found')
             }
-        
-        print('items001', items)
 
-        # convert json to dict
         items = json.loads(items[0].get('movements'))
 
-        print('items002', items)
-
-        # access to the movements and sum them
         balance = 0
         for item in items.get('movements'):
             print('item:', item)    
             balance += item.get('amount')
 
-        # Return the balance
         return {
             'statusCode': 200,
             'body': json.dumps(balance)
