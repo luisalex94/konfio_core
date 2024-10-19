@@ -20,7 +20,7 @@ jobs:
 
     - name: Package UserCoreSignIn
       run: |
-        cd lambdas_function/UserCoreSignIn
+        cd lambdas_function/users_core/UserCoreSignIn
         zip -r ../UserCoreSignIn.zip .
 
     - name: Configure AWS credentials
@@ -32,4 +32,4 @@ jobs:
 
     - name: Deploy Lambda UserCoreSignIn
       run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_001 }} --zip-file fileb://lambdas_function/UserCoreSignIn.zip
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_001 }} --zip-file fileb://lambdas_function/users_core/UserCoreSignIn.zip
