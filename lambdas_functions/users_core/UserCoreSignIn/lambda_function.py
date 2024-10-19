@@ -7,8 +7,19 @@ table = dynamodb.Table('user_core_ddbb')
 
 def lambda_handler(event, context):
 
-    account = event.get('account')
-    password = event.get('password')
+    if 'body' in event:
+        try:
+            body = json.loads(event['body'])
+        except json.JSONDecodeError:
+            return {
+                'statusCode': 400,
+                'body': json.dumps('Invalid JSON')
+            }
+    else:
+        body = event
+
+    account = body.get('account')
+    password = body.get('password')
 
     if not account:
         return {
@@ -21,11 +32,18 @@ def lambda_handler(event, context):
             KeyConditionExpression=Key('account').eq(account)
         )
         items = response.get('Items', [])
+
+        if password == items[0].get('password'):
+            return {
+                'statusCode': 200,
+                'body': json.dumps(items)
+            }
         
-        return {
-            'statusCode': 200,
-            'body': json.dumps(items)
-        }
+        else:
+            return {
+                'statusCode': 401,
+                'body': json.dumps('Incorrect password')
+            }
     except Exception as e:
         return {
             'statusCode': 500,
