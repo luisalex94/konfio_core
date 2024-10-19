@@ -3,6 +3,7 @@
 import json
 import boto3                                # type: ignore
 from boto3.dynamodb.conditions import Key   # type: ignore
+import random
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('bank_core_ddbb')
@@ -31,6 +32,12 @@ def lambda_handler(event, context):
         concept = body.get('concept')
         amount = body.get('amount')
         date = body.get('date')
+
+        # genrate a random id de 10 digits
+        id = random.randint(0000000000, 9999999999)
+
+        # type of movement: deposit
+        movement_type = 'deposit'
     
         try:
             response = table.query(
@@ -57,6 +64,8 @@ def lambda_handler(event, context):
                 }
     
             items['movements'].append({
+                'id': id,
+                'type': movement_type,
                 'concept': concept,
                 'amount': amount,
                 'date': date
