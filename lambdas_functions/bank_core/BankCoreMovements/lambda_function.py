@@ -1,6 +1,6 @@
 import json
-import boto3
-from boto3.dynamodb.conditions import Key
+import boto3                                # type: ignore
+from boto3.dynamodb.conditions import Key   # type: ignore
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('bank_core_ddbb')
