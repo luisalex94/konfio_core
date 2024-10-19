@@ -57,7 +57,7 @@ def lambda_handler(event, context):
             for item in items.get('movements'):
                 balance += item.get('amount')
     
-            if balance + amount < 0:
+            if balance - amount < 0:
                 return {
                     'statusCode': 400,
                     'body': json.dumps('Insufficient funds')
@@ -67,7 +67,7 @@ def lambda_handler(event, context):
                 'id': id,
                 'type': movement_type,
                 'concept': concept,
-                'amount': amount,
+                'amount': -amount,
                 'date': date
             })
             table.update_item(
