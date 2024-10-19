@@ -24,7 +24,7 @@ jobs:
         zip -r ../UserCoreSignIn.zip .
 
     - name: Package BankCoreMovements
-      runt: |
+      run: |
         cd lambdas_functions/bank_core/BankCoreMovements
         zip -r ../BankCoreMovements.zip .
 
