@@ -44,7 +44,7 @@ def lambda_handler(event, context):
         print('items001', items)
 
         # convert json to dict
-        items = json.loads(json.dumps(items))
+        items = json.loads(items[0].get('movements'))
 
         print('items002', items)
 
