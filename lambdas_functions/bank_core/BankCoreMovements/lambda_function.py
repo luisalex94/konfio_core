@@ -3,7 +3,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('user_core_ddbb')
+table = dynamodb.Table('bank_core_ddbb')
 
 def lambda_handler(event, context):
 
@@ -18,38 +18,33 @@ def lambda_handler(event, context):
     else:
         body = event
 
-    account = body.get('account')
-    password = body.get('password')
+    '''
+    In this section is where the code ask to user_core_valid_user_info lambda function if the user is valid
+    '''
+    
+    # Get the movements from the dynamodb database with the account number as the key
 
-    if not account:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('user_id is required')
-        }
-    
-    if not password:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('password is required')
-        }
-    
+    account = body.get('account')
+
     try:
         response = table.query(
             KeyConditionExpression=Key('account').eq(account)
         )
         items = response.get('Items', [])
 
-        if password == items[0].get('password'):
+        if not items:
             return {
-                'statusCode': 200,
-                'body': json.dumps(items)
+                'statusCode': 404,
+                'body': json.dumps('Account not found')
             }
+
+        # Return the movements
+        return {
+            'statusCode': 200,
+            'body': json.dumps(items)
+        }
         
-        else:
-            return {
-                'statusCode': 401,
-                'body': json.dumps('Incorrect password')
-            }
+
     except Exception as e:
         return {
             'statusCode': 500,
