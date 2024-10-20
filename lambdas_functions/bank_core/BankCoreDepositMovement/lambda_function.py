@@ -73,7 +73,7 @@ def lambda_handler(event, context):
     
             return {
                 'statusCode': 200,
-                'body': json.dumps('Movement added')
+                'body': json.dumps('Deposit movement successfully added')
             }
         
         except Exception as e:
