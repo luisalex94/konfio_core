@@ -9,7 +9,7 @@ class DynamoDBRepository:
 
     def get_user(self, account: str):
         response = self.table.query(
-            KeyConditionExpression=Key('email').eq(account)
+            KeyConditionExpression=Key('account').eq(account)
         )
         items = response.get('Items', [])
         if items:
