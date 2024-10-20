@@ -25,6 +25,6 @@ def lambda_handler(event, context):
     
     user = update_user_info(user, name, address)
     
-    database.update_user(user)
+    database.update_user(account, user)
     
     return response_200('User update complete')
