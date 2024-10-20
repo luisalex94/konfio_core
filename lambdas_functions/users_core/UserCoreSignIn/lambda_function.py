@@ -15,10 +15,10 @@ def lambda_handler(event, context):
     password = body.get('password')
 
     if not account:
-        return response_400('account is required')
+        return response_400('Account is required')
 
     if not password:
-        return response_400('password is required')
+        return response_400('Password is required')
 
     user = database.get_user(account)
 
