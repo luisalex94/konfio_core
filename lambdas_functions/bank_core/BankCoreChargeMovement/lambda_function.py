@@ -32,18 +32,7 @@ def lambda_handler(event, context):
         movement_type = 'charge'
     
         try:
-            response = database.query(
-                KeyConditionExpression=Key('account').eq(account)
-            )
-            items = response.get('Items', [])
-    
-            if not items:
-                return {
-                    'statusCode': 404,
-                    'body': json.dumps('Account not found')
-                }
-    
-            items = json.loads(items[0].get('movements'))
+            items = database.get_movements(account)
     
             balance = 0
             for item in items.get('movements'):
@@ -62,11 +51,8 @@ def lambda_handler(event, context):
                 'amount': -amount,
                 'date': date
             })
-            database.update_item(
-                Key={'account': account},
-                UpdateExpression='SET movements = :movements',
-                ExpressionAttributeValues={':movements': json.dumps(items)}
-            )
+            
+            database.update_account_movements(account, items)
     
             return {
                 'statusCode': 200,
