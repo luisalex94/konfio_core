@@ -1,5 +1,4 @@
 from repository import DynamoDBRepository
-
 from utils import get_body, response_200, response_400, response_500
 
 database = DynamoDBRepository('bank_core_ddbb')

@@ -1,57 +1,31 @@
-import json
-import boto3
-from boto3.dynamodb.conditions import Key
+from utils import get_body, response_200, response_400, response_500
+from repository import DynamoDBRepository
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('user_core_ddbb')
+database = DynamoDBRepository('user_core_ddbb')
+
 
 def lambda_handler(event, context):
 
-    if 'body' in event:
-        try:
-            body = json.loads(event['body'])
-        except json.JSONDecodeError:
-            return {
-                'statusCode': 400,
-                'body': json.dumps('Invalid JSON')
-            }
-    else:
-        body = event
+    body = get_body(event)
+
+    if body is None:
+        return response_400('Invalid JSON')
 
     account = body.get('account')
     password = body.get('password')
 
     if not account:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('user_id is required')
-        }
-    
-    if not password:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('password is required')
-        }
-    
-    try:
-        response = table.query(
-            KeyConditionExpression=Key('account').eq(account)
-        )
-        items = response.get('Items', [])
+        return response_400('account is required')
 
-        if password == items[0].get('password'):
-            return {
-                'statusCode': 200,
-                'body': json.dumps(items)
-            }
-        
-        else:
-            return {
-                'statusCode': 401,
-                'body': json.dumps('Incorrect password')
-            }
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error querying the database: {str(e)}")
-        }
+    if not password:
+        return response_400('password is required')
+
+    user = database.get_user(account)
+
+    if not user:
+        return response_400('User not found')
+
+    if user['password'] != password:
+        return response_400('Invalid password')
+
+    return response_200(user)
