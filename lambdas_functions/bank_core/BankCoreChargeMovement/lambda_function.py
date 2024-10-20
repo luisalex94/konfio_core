@@ -5,10 +5,10 @@ import boto3                                # type: ignore
 from boto3.dynamodb.conditions import Key   # type: ignore
 import random
 
+from repository import DynamoDBRepository
 from utils import get_body
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('bank_core_ddbb')
+database = DynamoDBRepository('bank_core_ddbb')
 
 def lambda_handler(event, context):
     
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
         movement_type = 'charge'
     
         try:
-            response = table.query(
+            response = database.query(
                 KeyConditionExpression=Key('account').eq(account)
             )
             items = response.get('Items', [])
@@ -62,7 +62,7 @@ def lambda_handler(event, context):
                 'amount': -amount,
                 'date': date
             })
-            table.update_item(
+            database.update_item(
                 Key={'account': account},
                 UpdateExpression='SET movements = :movements',
                 ExpressionAttributeValues={':movements': json.dumps(items)}
