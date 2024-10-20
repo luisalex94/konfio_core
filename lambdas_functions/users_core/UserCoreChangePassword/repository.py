@@ -17,10 +17,11 @@ class DynamoDBRepository:
             return items[0]
         return None
 
-    def update_user(self, account: str, user: str, name: str, address: str):
+    def update_password(self, account: str, user: str, actual_password: str, old_password: str, new_password: str):
+        if actual_password != old_password:
+            raise ValueError('Invalid password')
         self.table.update_item(
             Key={'account': account, 'user': user},  # Partition key + Sort key
-            UpdateExpression='SET #nm = :name, address = :address',
-            ExpressionAttributeNames={'#nm': 'name'},
-            ExpressionAttributeValues={':name': name, ':address': address}
+            UpdateExpression='SET password = :password',
+            ExpressionAttributeValues={':password': new_password}
         )
