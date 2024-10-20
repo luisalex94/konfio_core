@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     if not user:
         return response_400('User not found')
     
-    user = update_user_info(user)
+    user = update_user_info(user, name, address)
     
     database.update_user(user)
     
