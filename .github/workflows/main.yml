@@ -23,6 +23,11 @@ jobs:
         cd lambdas_functions/users_core/UserCoreSignIn
         zip -r ../UserCoreSignIn.zip .
 
+    - name: Package UserCoreChangeInfo
+      run: |
+        cd lambdas_functions/users_core/UserCoreChangeInfo
+        zip -r ../UserCoreChangeInfo.zip .
+
     - name: Package BankCoreMovements
       run: |
         cd lambdas_functions/bank_core/BankCoreMovements
@@ -53,6 +58,10 @@ jobs:
     - name: Deploy Lambda UserCoreSignIn
       run: |
         aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_001 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSignIn.zip
+
+    - name: Deploy Lambda UserCoreChangeInfo
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_006 }} --zip-file fileb://lambdas_functions/users_core/UserCoreChangeInfo.zip
 
     - name: Deploy Lambda BankCoreMovements
       run: |
