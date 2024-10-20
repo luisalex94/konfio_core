@@ -1,83 +1,33 @@
-# Lambda function to add to the dynamodb table bank_core_ddbb a new movement of an account. This movement is a deposit and it is saved in the json format in the dynamodb table.
+from repository import DynamoDBRepository
+from movement_strategy import DepositMovementStrategy
+from utils import get_body, generate_movement_id, response_200, response_400, response_500
 
-import json
-import boto3                                # type: ignore
-from boto3.dynamodb.conditions import Key   # type: ignore
-import random
-
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('bank_core_ddbb')
+database = DynamoDBRepository('bank_core_ddbb')
 
 def lambda_handler(event, context):
     
-        if 'body' in event:
-            try:
-                body = json.loads(event['body'])
-            except json.JSONDecodeError:
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps('Invalid JSON')
-                }
-            
-        else:
-            body = event
+        body = get_body(event)
     
         '''
         In this section is where the code ask to user_core_valid_user_info lambda function if the user is valid
         '''
-    
-        # Get the movements from the dynamodb database with the account number as the key
     
         account = body.get('account')
         concept = body.get('concept')
         amount = body.get('amount')
         date = body.get('date')
 
-        # genrate a random id de 10 digits
-        id = random.randint(0000000000, 9999999999)
+        movement_id = generate_movement_id()
 
-        # type of movement: deposit
-        movement_type = 'deposit'
-    
-        try:
-            response = table.query(
-                KeyConditionExpression=Key('account').eq(account)
-            )
-            items = response.get('Items', [])
-    
-            if not items:
-                return {
-                    'statusCode': 404,
-                    'body': json.dumps('Account not found')
-                }
-    
-            items = json.loads(items[0].get('movements'))
-    
-            items['movements'].append({
-                'id': id,
-                'type': movement_type,
-                'concept': concept,
-                'amount': amount,
-                'date': date
-            })
-    
-            table.update_item(
-                Key={
-                    'account': account
-                },
-                UpdateExpression='SET movements = :val1',
-                ExpressionAttributeValues={
-                    ':val1': json.dumps(items)
-                }
-            )
-    
-            return {
-                'statusCode': 200,
-                'body': json.dumps('Deposit movement successfully added')
-            }
+        movements = database.get_movements(account)
+
+        if not movements:
+            return response_400('Account not found')
         
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'body': json.dumps(f"Error querying the database: {str(e)}")
-            }
+        add_movement(database, account, movements, movement_id, concept, amount, date)
+
+        return response_200('Deposit movement successfully added')
+    
+def add_movement(database, account, movements, movement_id, concept, amount, date):
+    DepositMovementStrategy().add_movement(movements, movement_id, concept, amount, date)
+    database.update_account_movements(account, movements)

@@ -1,5 +1,3 @@
-# LambdaFunction to charge a movement in dynamodb, this call first check if the balance is enough to do the movement, if it is enough, the movement is added to the account movements.
-
 from repository import DynamoDBRepository
 from movement_strategy import ChargeMovementStrategy
 from utils import get_body, generate_movement_id, response_200, response_400, response_500, has_sufficient_founds
@@ -31,7 +29,7 @@ def lambda_handler(event, context):
 
         add_movement(database, account, movements, movement_id, concept, amount, date)
 
-        return response_200('Movement added')
+        return response_200('Charge movement successfully added')
         
 def add_movement(database, account, movements, movement_id, concept, amount, date):
     ChargeMovementStrategy().add_movement(movements, movement_id, concept, amount, date)
