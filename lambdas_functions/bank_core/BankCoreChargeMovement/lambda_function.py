@@ -5,22 +5,14 @@ import boto3                                # type: ignore
 from boto3.dynamodb.conditions import Key   # type: ignore
 import random
 
+from utils import get_body
+
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('bank_core_ddbb')
 
 def lambda_handler(event, context):
     
-        if 'body' in event:
-            try:
-                body = json.loads(event['body'])
-            except json.JSONDecodeError:
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps('Invalid JSON')
-                }
-            
-        else:
-            body = event
+        body = get_body(event)
     
         '''
         In this section is where the code ask to user_core_valid_user_info lambda function if the user is valid
