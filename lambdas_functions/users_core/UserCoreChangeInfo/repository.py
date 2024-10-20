@@ -17,10 +17,11 @@ class DynamoDBRepository:
         if items:
             return items[0]
         return None
-
-    def update_user(self, account: str, user: dict):
+    
+    def update_user(self, account: str, name, address):
         self.table.update_item(
             Key={'account': account},
-            UpdateExpression='SET account = :account',
-            ExpressionAttributeValues={':account': json.dumps(user)}
+            UpdateExpression='SET #name = :name, #address = :address',
+            ExpressionAttributeNames={'#name': 'name', '#address': 'address'},
+            ExpressionAttributeValues={':name': name, ':address': address}
         )
