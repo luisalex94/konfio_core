@@ -18,10 +18,10 @@ class DynamoDBRepository:
             return items[0]
         return None
 
-    def update_user(self, account: str, name: str, address: str):
+    def update_user(self, account: str, user: str, name: str, address: str):
         self.table.update_item(
-            Key={'account': account},
+            Key={'account': account, 'user': user},  # Partition key + Sort key
             UpdateExpression='SET #nm = :name, address = :address',
-            ExpressionAttributeNames={'#nm': 'name'},  # Alias para 'name'
+            ExpressionAttributeNames={'#nm': 'name'},
             ExpressionAttributeValues={':name': name, ':address': address}
         )
