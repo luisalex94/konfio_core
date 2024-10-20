@@ -21,6 +21,7 @@ class DynamoDBRepository:
     def update_user(self, account: str, name: str, address: str):
         self.table.update_item(
             Key={'account': account},
-            UpdateExpression='SET name = :name, address = :address',
+            UpdateExpression='SET #nm = :name, address = :address',
+            ExpressionAttributeNames={'#nm': 'name'},  # Alias para 'name'
             ExpressionAttributeValues={':name': name, ':address': address}
         )
