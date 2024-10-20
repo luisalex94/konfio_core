@@ -1,60 +1,23 @@
-# Lambda function to access to dynamodb table bank_core_ddbb, get the movements of an account, sum the movements and return the balance of the account.
+from repository import DynamoDBRepository
+from utils import get_body, calculate_balance, response_200, response_400, response_500
 
-import json
-import boto3                                # type: ignore
-from boto3.dynamodb.conditions import Key   # type: ignore
-
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('bank_core_ddbb')
+database = DynamoDBRepository('bank_core_ddbb-core')
 
 def lambda_handler(event, context):
 
-    if 'body' in event:
-        try:
-            body = json.loads(event['body'])
-        except json.JSONDecodeError:
-            return {
-                'statusCode': 400,
-                'body': json.dumps('Invalid JSON')
-            }
-        
-    else:
-        body = event
+    body = get_body(event)
 
     '''
     In this section is where the code ask to user_core_valid_user_info lambda function if the user is valid
     '''
 
-    # Get the movements from the dynamodb database with the account number as the key
-
     account = body.get('account')
 
-    try:
-        response = table.query(
-            KeyConditionExpression=Key('account').eq(account)
-        )
-        items = response.get('Items', [])
+    movements = database.get_movements(account)
 
-        if not items:
-            return {
-                'statusCode': 404,
-                'body': json.dumps('Account not found')
-            }
-
-        items = json.loads(items[0].get('movements'))
-
-        balance = 0
-        for item in items.get('movements'):
-            print('item:', item)    
-            balance += item.get('amount')
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(balance)
-        }
+    if not movements:
+        return response_400('Account not found')
     
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error querying the database: {str(e)}")
-        }
+    balance = calculate_balance(movements)
+    
+    return response_200(balance)
