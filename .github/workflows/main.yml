@@ -33,6 +33,11 @@ jobs:
         cd lambdas_functions/users_core/UserCoreChangePassword
         zip -r ../UserCoreChangePassword.zip .
 
+    - name: Package UserCoreSignUp
+      run: |
+        cd lambdas_functions/users_core/UserCoreSignUp
+        zip -r ../UserCoreSignUp.zip .
+
     - name: Package BankCoreMovements
       run: |
         cd lambdas_functions/bank_core/BankCoreMovements
@@ -71,6 +76,10 @@ jobs:
     - name: Deploy Lambda UserCoreChangePassword
       run: |
         aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_007 }} --zip-file fileb://lambdas_functions/users_core/UserCoreChangePassword.zip
+
+    - name: Deploy Lambda UserCoreSignUp
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_008 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSignUp.zip
 
     - name: Deploy Lambda BankCoreMovements
       run: |
