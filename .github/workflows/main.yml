@@ -43,7 +43,7 @@ jobs:
         cd lambdas_functions/bank_core/BankCoreDepositMovement
         zip -r ../BankCoreDepositMovement.zip .
 
-    - name: Packge BankCoreChargeMovement
+    - name: Package BankCoreChargeMovement
       run: |
         cd lambdas_functions/bank_core/BankCoreChargeMovement
         zip -r ../BankCoreChargeMovement.zip .

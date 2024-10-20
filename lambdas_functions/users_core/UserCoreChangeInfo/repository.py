@@ -1,6 +1,6 @@
 import json
 import boto3                                # type: ignore
-from boto3.dyanmodb.conditions import Key   # type: ignore
+from boto3.dynamodb.conditions import Key   # type: ignore
 
 dynamodb = boto3.resource('dynamodb')
 
