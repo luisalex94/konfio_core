@@ -6,6 +6,7 @@ from boto3.dynamodb.conditions import Key   # type: ignore
 import random
 
 from repository import DynamoDBRepository
+from movement_strategy import ChargeMovementStrategy
 from utils import get_body
 
 database = DynamoDBRepository('bank_core_ddbb')
@@ -52,7 +53,7 @@ def lambda_handler(event, context):
                 'date': date
             })
             
-            database.update_account_movements(account, items)
+            add_movement(database, account, items, id, concept, amount, date)
     
             return {
                 'statusCode': 200,
@@ -64,3 +65,7 @@ def lambda_handler(event, context):
                 'statusCode': 500,
                 'body': json.dumps(f"Error querying the database: {str(e)}")
             }
+        
+def add_movement(database, account, movements, movement_id, concept, amount, date):
+    ChargeMovementStrategy().add_movement(movements, movement_id, concept, amount, date)
+    database.update_account_movements(account, movements)
