@@ -6,7 +6,7 @@ database = DynamoDBRepository('user_core_ddbb')
 
 def lambda_handler(event, context):
     
-    body = get_body
+    body = get_body(event)
     
     if body is None:
         return response_400('Invalid JSON')
