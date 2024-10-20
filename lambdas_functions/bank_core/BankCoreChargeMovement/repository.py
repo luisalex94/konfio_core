@@ -4,6 +4,7 @@ import json
 
 dynamodb = boto3.resource('dynamodb')
 
+
 class DynamoDBRepository:
     def __init__(self, table_name: str):
         self.table = dynamodb.Table(table_name)
@@ -16,7 +17,7 @@ class DynamoDBRepository:
         if items:
             return json.loads(items[0].get('movements'))
         return None
-    
+
     def update_account_movements(self, account: str, movements: dict):
         self.table.update_item(
             Key={'account': account},

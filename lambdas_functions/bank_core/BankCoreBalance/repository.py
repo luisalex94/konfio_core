@@ -4,6 +4,7 @@ import json
 
 dynamodb = boto3.resource('dynamodb')
 
+
 class DynamoDBRepository:
     def __init__(self, table_name: str):
         self.table = dynamodb.Table(table_name)

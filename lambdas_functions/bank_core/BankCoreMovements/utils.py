@@ -1,5 +1,6 @@
 import json
 
+
 def get_body(event):
     if 'body' in event:
         try:
@@ -8,17 +9,20 @@ def get_body(event):
             raise ValueError('Invalid JSON')
     return event
 
+
 def response_200(message):
     return {
         'statusCode': 200,
         'body': json.dumps(message)
     }
 
+
 def response_400(message):
     return {
         'statusCode': 400,
         'body': json.dumps(message)
     }
+
 
 def response_500():
     return {

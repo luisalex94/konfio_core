@@ -1,6 +1,7 @@
 import json
 import random
 
+
 def get_body(event):
     if 'body' in event:
         try:
@@ -9,12 +10,15 @@ def get_body(event):
             raise ValueError('Invalid JSON')
     return event
 
+
 def has_sufficient_founds(movements, amount):
     balance = sum(item['amount'] for item in movements['movements'])
     return balance >= amount
 
+
 def generate_movement_id():
     return random.randint(0000000000, 9999999999)
+
 
 def response_200(message):
     return {
@@ -22,11 +26,13 @@ def response_200(message):
         'body': json.dumps(message)
     }
 
+
 def response_400(message):
     return {
         'statusCode': 400,
         'body': json.dumps(message)
     }
+
 
 def response_500():
     return {

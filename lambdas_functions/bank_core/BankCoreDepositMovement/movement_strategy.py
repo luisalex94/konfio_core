@@ -1,7 +1,8 @@
 class MovementStrategy:
     def add_movement(self, movements, movement_id_, concept, amount, date):
         raise NotImplementedError
-    
+
+
 class ChargeMovementStrategy(MovementStrategy):
     def add_movement(self, movements, movement_id, concept, amount, date):
         movements['movements'].append({
@@ -11,6 +12,7 @@ class ChargeMovementStrategy(MovementStrategy):
             'amount': -amount,
             'date': date
         })
+
 
 class DepositMovementStrategy(MovementStrategy):
     def add_movement(self, movements, movement_id, concept, amount, date):
