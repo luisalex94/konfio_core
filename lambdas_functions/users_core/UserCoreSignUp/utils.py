@@ -32,6 +32,13 @@ def create_accout_data(user: str, name: str, address: str, password: str):
     }
 
 
+def create_bank_data(account: str):
+    return {
+        'account': account,
+        'balance': '{"movements": []}'
+    }
+
+
 def response_200(body):
     return {
         'statusCode': 200,
