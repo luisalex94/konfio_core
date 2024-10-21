@@ -1,5 +1,5 @@
 from repository import send_email
-from utils import get_body, response_200, response_400, response_500, message_constructor
+from utils import get_body, response_200, response_400, response_500, message_constructor, mail_body_constructor
 
 
 def lambda_handler(event, context):
@@ -13,8 +13,12 @@ def lambda_handler(event, context):
     destination_email = body.get('destination_email')
     subject = body.get('subject')
     mail_body = body.get('body')
+    name = body.get('user_name')
+    account = body.get('account')
 
     destination = {"ToAddresses": [destination_email]}
+    
+    mail_body = mail_body_constructor(name, account)
     
     message = message_constructor(subject, mail_body)
 
