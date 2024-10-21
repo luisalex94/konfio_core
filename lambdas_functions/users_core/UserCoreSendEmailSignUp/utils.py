@@ -24,7 +24,7 @@ def mail_body_constructor(name, account):
               color: #333333;
             }}
             h1 {{
-              color: #1a73e8;
+              color: #ed26e3;
             }}
             p {{
               font-size: 16px;
@@ -37,10 +37,9 @@ def mail_body_constructor(name, account):
           </style>
         </head>
         <body>
-          <h1>Correo enviado desde Lambda</h1>
-          <p>Hola <strong>{name}</strong>,</p>
-          <p>Te enviamos este mensaje a la dirección: <strong>{account}</strong></p>
-          <p><strong>{account}</strong></p>
+          <h1>Bienvenido a Konfio {name}</h1>
+          <p>Tu nuevo número de cuenta es: <strong>{account}</strong></p>
+          <p>Con el podrás acceder a tu página de cliente y realizar consultas. También podrás realizar movimientos con tu terminal.</p>
           <div class="footer">
             <p>Este correo fue enviado automáticamente. No respondas a este mensaje.</p>
           </div>
