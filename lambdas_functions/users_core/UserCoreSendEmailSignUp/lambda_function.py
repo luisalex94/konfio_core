@@ -11,12 +11,12 @@ def lambda_handler(event, context):
 
     source = body.get('source')
     destination_email = body.get('destination_email')
-    body = body.get('body')
     subject = body.get('subject')
+    mail_body = body.get('body')
 
     destination = {"ToAddresses": [destination_email]}
     
-    message = message_constructor(subject, body)
+    message = message_constructor(subject, mail_body)
 
     response = send_email(source, destination, message)
 
