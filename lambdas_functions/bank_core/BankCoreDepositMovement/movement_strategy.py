@@ -1,6 +1,8 @@
 class MovementStrategy:
     def add_movement(self, movements, movement_id_, concept, amount, date):
         raise NotImplementedError
+    
+    # this example to Fernanda
 
 
 class ChargeMovementStrategy(MovementStrategy):
