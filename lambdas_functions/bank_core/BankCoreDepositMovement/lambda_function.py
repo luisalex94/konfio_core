@@ -19,6 +19,7 @@ def lambda_handler(event, context):
     date = body.get('date')
     movement_id = generate_movement_id()
     movements = database.get_movements(account)
+
     if not movements:
         return response_400('Account not found')
 

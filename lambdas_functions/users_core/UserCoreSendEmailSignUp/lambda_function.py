@@ -11,7 +11,6 @@ def lambda_handler(event, context):
 
     source = body.get('source')
     destination_email = body.get('destination_email')
-    subject = body.get('subject')
     name = body.get('user_name')
     account = body.get('account')
 
