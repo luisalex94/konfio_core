@@ -10,7 +10,8 @@ def get_body(event):
     return event
 
 
-def message_constructor(subject, body):
+def message_constructor(name, body):
+    subject = f"Bienvenido a Konfio {name}"
     return {"Subject": {"Data": subject}, "Body": {"Html": {"Data": body}}}
 
 

@@ -19,7 +19,7 @@ def lambda_handler(event, context):
     
     mail_body = mail_body_constructor(name, account)
     
-    message = message_constructor(subject, mail_body)
+    message = message_constructor(name, mail_body)
 
     response = send_email(source, destination, message)
 
