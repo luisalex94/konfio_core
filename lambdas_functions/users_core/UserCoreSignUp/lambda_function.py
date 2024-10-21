@@ -28,4 +28,4 @@ def lambda_handler(event, context):
 
     bank_database.create_user_bank(bank_data)
 
-    return response_200('User created')
+    return response_200(account_data)
