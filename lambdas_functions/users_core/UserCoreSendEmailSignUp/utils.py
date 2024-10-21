@@ -10,6 +10,10 @@ def get_body(event):
     return event
 
 
+def message_constructor(subject, body):
+    return {"Subject": {"Data": subject}, "Body": {"Html": {"Data": body}}}
+
+
 def response_200(body):
     return {
         'statusCode': 200,
