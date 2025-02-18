@@ -1,9 +1,9 @@
-name: Deploy Lambda Function
+name: Deploy Lambda Test Function
 
 on:
   push:
     branches:
-      - master
+      - master-test
 
 jobs:
   deploy:
@@ -18,50 +18,20 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Package UserCoreSignIn
-      run: |
-        cd lambdas_functions/users_core/UserCoreSignIn
-        zip -r ../UserCoreSignIn.zip .
+    - name: Configurar versión de Python
+      run: echo "PYTHON_VERSION=python3.12" >> $GITHUB_ENV
 
-    - name: Package UserCoreChangeInfo
+    - name: Install dependencies
       run: |
-        cd lambdas_functions/users_core/UserCoreChangeInfo
-        zip -r ../UserCoreChangeInfo.zip .
+        cd lambdas_functions/bank_core/BankCoreJwtTesting
+        mkdir -p package
+        pip install -r requirements.txt -t package
 
-    - name: Package UserCoreChangePassword
+    - name: Package lambda with dependencies
       run: |
-        cd lambdas_functions/users_core/UserCoreChangePassword
-        zip -r ../UserCoreChangePassword.zip .
-
-    - name: Package UserCoreSignUp
-      run: |
-        cd lambdas_functions/users_core/UserCoreSignUp
-        zip -r ../UserCoreSignUp.zip .
-
-    - name: Package UserCoreSendEmailSignUp
-      run: |
-        cd lambdas_functions/users_core/UserCoreSendEmailSignUp
-        zip -r ../UserCoreSendEmailSignUp.zip .
-
-    - name: Package BankCoreMovements
-      run: |
-        cd lambdas_functions/bank_core/BankCoreMovements
-        zip -r ../BankCoreMovements.zip .
-
-    - name: Package BankCoreBalance
-      run: |
-        cd lambdas_functions/bank_core/BankCoreBalance
-        zip -r ../BankCoreBalance.zip .
-
-    - name: Package BankCoreDepositMovement
-      run: |
-        cd lambdas_functions/bank_core/BankCoreDepositMovement
-        zip -r ../BankCoreDepositMovement.zip .
-
-    - name: Package BankCoreChargeMovement
-      run: |
-        cd lambdas_functions/bank_core/BankCoreChargeMovement
-        zip -r ../BankCoreChargeMovement.zip .
+        cd lambdas_functions/bank_core/BankCoreJwtTesting
+        cd package && zip -r ../BankCoreJwtTesting.zip . && cd ..
+        zip -g BankCoreJwtTesting.zip *.py
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -70,38 +40,17 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Deploy Lambda UserCoreSignIn
+    - name: Create Lambda
       run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_001 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSignIn.zip
+        aws lambda create-function \
+        --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_010 }} \
+        --runtime python3.12 \
+        --role ${{ secrets.LAMBDA_ROLE_STANDARD_NAME }} \
+        --handler lambda_function.lambda_handler \
+        --timeout 30 \
+        --memory-size 128 \
+        --zip-file fileb://lambdas_functions/bank_core/BankCoreJwtTesting/BankCoreJwtTesting.zip
 
-    - name: Deploy Lambda UserCoreChangeInfo
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_006 }} --zip-file fileb://lambdas_functions/users_core/UserCoreChangeInfo.zip
-
-    - name: Deploy Lambda UserCoreChangePassword
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_007 }} --zip-file fileb://lambdas_functions/users_core/UserCoreChangePassword.zip
-
-    - name: Deploy Lambda UserCoreSignUp
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_008 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSignUp.zip
-
-    - name: Deploy Lambda UserCoreSendEmailSignUp
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_009 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSendEmailSignUp.zip
-
-    - name: Deploy Lambda BankCoreMovements
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_002 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreMovements.zip
-
-    - name: Deploy Lambda BankCoreBalance
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_003 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreBalance.zip
-
-    - name: Deploy Lambda BankCoreDepositMovement
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_004 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreDepositMovement.zip
-
-    - name: Deploy Lambda BankCoreChargeMovement
-      run: |
-        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_005 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreChargeMovement.zip
+    #- name: Deploy Lambda BankCoreJwtTesting
+    #  run: |
+    #    aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_010 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreJwtTesting.zip

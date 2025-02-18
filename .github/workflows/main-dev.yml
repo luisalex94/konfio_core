@@ -1,0 +1,107 @@
+name: Deploy Lambda Function
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Package UserCoreSignIn
+      run: |
+        cd lambdas_functions/users_core/UserCoreSignIn
+        zip -r ../UserCoreSignIn.zip .
+
+    - name: Package UserCoreChangeInfo
+      run: |
+        cd lambdas_functions/users_core/UserCoreChangeInfo
+        zip -r ../UserCoreChangeInfo.zip .
+
+    - name: Package UserCoreChangePassword
+      run: |
+        cd lambdas_functions/users_core/UserCoreChangePassword
+        zip -r ../UserCoreChangePassword.zip .
+
+    - name: Package UserCoreSignUp
+      run: |
+        cd lambdas_functions/users_core/UserCoreSignUp
+        zip -r ../UserCoreSignUp.zip .
+
+    - name: Package UserCoreSendEmailSignUp
+      run: |
+        cd lambdas_functions/users_core/UserCoreSendEmailSignUp
+        zip -r ../UserCoreSendEmailSignUp.zip .
+
+    - name: Package BankCoreMovements
+      run: |
+        cd lambdas_functions/bank_core/BankCoreMovements
+        zip -r ../BankCoreMovements.zip .
+
+    - name: Package BankCoreBalance
+      run: |
+        cd lambdas_functions/bank_core/BankCoreBalance
+        zip -r ../BankCoreBalance.zip .
+
+    - name: Package BankCoreDepositMovement
+      run: |
+        cd lambdas_functions/bank_core/BankCoreDepositMovement
+        zip -r ../BankCoreDepositMovement.zip .
+
+    - name: Package BankCoreChargeMovement
+      run: |
+        cd lambdas_functions/bank_core/BankCoreChargeMovement
+        zip -r ../BankCoreChargeMovement.zip .
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy Lambda UserCoreSignIn
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_001 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSignIn.zip
+
+    - name: Deploy Lambda UserCoreChangeInfo
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_006 }} --zip-file fileb://lambdas_functions/users_core/UserCoreChangeInfo.zip
+
+    - name: Deploy Lambda UserCoreChangePassword
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_007 }} --zip-file fileb://lambdas_functions/users_core/UserCoreChangePassword.zip
+
+    - name: Deploy Lambda UserCoreSignUp
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_008 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSignUp.zip
+
+    - name: Deploy Lambda UserCoreSendEmailSignUp
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_009 }} --zip-file fileb://lambdas_functions/users_core/UserCoreSendEmailSignUp.zip
+
+    - name: Deploy Lambda BankCoreMovements
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_002 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreMovements.zip
+
+    - name: Deploy Lambda BankCoreBalance
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_003 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreBalance.zip
+
+    - name: Deploy Lambda BankCoreDepositMovement
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_004 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreDepositMovement.zip
+
+    - name: Deploy Lambda BankCoreChargeMovement
+      run: |
+        aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_005 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreChargeMovement.zip
