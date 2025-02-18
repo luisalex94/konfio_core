@@ -16,23 +16,27 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.12'
       
       - name: Configurar versión de Python
         run: echo "PYTHON_VERSION=python3.12" >> $GITHUB_ENV
 
-      # Usamos un contenedor Amazon Linux para instalar las dependencias
-      - name: Build package in Amazon Linux container
+      # Usamos Amazon Linux 2023 para construir las dependencias en un entorno compatible con Python 3.12
+      - name: Build package in Amazon Linux 2023 container
         run: |
-          docker run --rm -v "$PWD/lambdas_functions/bank_core/BankCoreJwtTesting":/var/task amazonlinux:2 bash -c "\
-            yum update -y && \
-            yum install -y python38 python38-devel gcc openssl-devel libffi-devel && \
-            curl -sSL https://bootstrap.pypa.io/get-pip.py | python3.8 && \
-            python3.8 -m pip install --upgrade pip && \
-            mkdir -p package && \
-            python3.8 -m pip install -r requirements.txt -t package"
+          docker run --rm \
+            -v "$PWD/lambdas_functions/bank_core/BankCoreJwtTesting":/var/task \
+            -w /var/task \
+            amazonlinux:2023 bash -c "\
+              dnf update -y && \
+              dnf install -y python3.12 python3.12-devel gcc openssl-devel libffi-devel && \
+              python3.12 -m ensurepip && \
+              python3.12 -m pip install --upgrade pip && \
+              mkdir -p package && \
+              python3.12 -m pip install -r requirements.txt -t package"
 
-      # Empaquetamos el código y las dependencias ya instaladas en el contenedor
+
+      # Empaquetamos el código y las dependencias
       - name: Package lambda with dependencies
         run: |
           cd lambdas_functions/bank_core/BankCoreJwtTesting
