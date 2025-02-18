@@ -10,47 +10,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      
+      - name: Configurar versión de Python
+        run: echo "PYTHON_VERSION=python3.12" >> $GITHUB_ENV
 
-    - name: Configurar versión de Python
-      run: echo "PYTHON_VERSION=python3.12" >> $GITHUB_ENV
+      # Usamos un contenedor Amazon Linux para instalar las dependencias
+      - name: Build package in Amazon Linux container
+        run: |
+          docker run --rm -v "$PWD/lambdas_functions/bank_core/BankCoreJwtTesting":/var/task amazonlinux:2 bash -c "\
+            yum update -y && \
+            yum install -y python38 python38-devel gcc openssl-devel libffi-devel && \
+            curl -sSL https://bootstrap.pypa.io/get-pip.py | python3.8 && \
+            python3.8 -m pip install --upgrade pip && \
+            mkdir -p package && \
+            python3.8 -m pip install -r requirements.txt -t package"
 
-    - name: Install dependencies
-      run: |
-        cd lambdas_functions/bank_core/BankCoreJwtTesting
-        mkdir -p package
-        pip install -r requirements.txt -t package
+      # Empaquetamos el código y las dependencias ya instaladas en el contenedor
+      - name: Package lambda with dependencies
+        run: |
+          cd lambdas_functions/bank_core/BankCoreJwtTesting
+          cd package && zip -r ../BankCoreJwtTesting.zip . && cd ..
+          zip -g BankCoreJwtTesting.zip *.py
 
-    - name: Package lambda with dependencies
-      run: |
-        cd lambdas_functions/bank_core/BankCoreJwtTesting
-        cd package && zip -r ../BankCoreJwtTesting.zip . && cd ..
-        zip -g BankCoreJwtTesting.zip *.py
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-
-    - name: Create Lambda
-      run: |
-        aws lambda create-function \
-        --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_010 }} \
-        --runtime python3.12 \
-        --role ${{ secrets.LAMBDA_ROLE_STANDARD_NAME }} \
-        --handler lambda_function.lambda_handler \
-        --timeout 30 \
-        --memory-size 128 \
-        --zip-file fileb://lambdas_functions/bank_core/BankCoreJwtTesting/BankCoreJwtTesting.zip
-
-    #- name: Deploy Lambda BankCoreJwtTesting
-    #  run: |
-    #    aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_010 }} --zip-file fileb://lambdas_functions/bank_core/BankCoreJwtTesting.zip
+      - name: Create Lambda
+        run: |
+          aws lambda create-function \
+            --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME_010 }} \
+            --runtime python3.12 \
+            --role ${{ secrets.LAMBDA_ROLE_STANDARD_NAME }} \
+            --handler lambda_function.lambda_handler \
+            --timeout 30 \
+            --memory-size 128 \
+            --zip-file fileb://lambdas_functions/bank_core/BankCoreJwtTesting/BankCoreJwtTesting.zip
